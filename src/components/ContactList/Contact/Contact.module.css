@@ -1,0 +1,20 @@
+.name {
+  width: 150px;
+  overflow: hidden;
+}
+
+.number {
+  width: 100px;
+  overflow: hidden;
+}
+
+.delete_btn {
+  padding: 5px;
+  border-radius: 5px;
+  font-weight: bold;
+}
+
+.delete_btn:hover,
+.delete_btn:focus {
+  background-color: red;
+}
