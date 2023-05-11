@@ -20,14 +20,23 @@ class App extends Component {
 
   componentDidMount() {
     const phonebook = getFromLocalStorage();
+
     if (phonebook !== null) {
       this.setState({ contacts: phonebook });
     }
   }
 
   componentDidUpdate() {
-    if (this.state.contacts.length > 0) {
-      pushToLocalStorage(this.state.contacts);
+    const {
+      state: { contacts },
+    } = this;
+
+    if (contacts.length > 0) {
+      pushToLocalStorage(contacts);
+    }
+
+    if (contacts.length === 0) {
+      clearStorage();
     }
   }
 
@@ -38,6 +47,7 @@ class App extends Component {
       isContactPresent,
       createContactObj,
     } = this;
+
     if (!isContactPresent(name, number)) {
       this.setState({
         contacts: [...contacts, createContactObj(inputData)].sort(),
@@ -78,9 +88,8 @@ class App extends Component {
     this.setState({ filter: event.target.value.trim().toLowerCase() });
   }, 300);
 
-  deletePhonebook = () => {
+  clearPhonebook = () => {
     this.setState({ contacts: [] });
-    clearStorage();
   };
 
   render() {
@@ -89,7 +98,7 @@ class App extends Component {
       addContact,
       deleteContact,
       onChangeFilterInput,
-      deletePhonebook,
+      clearPhonebook,
     } = this;
 
     return (
@@ -105,7 +114,7 @@ class App extends Component {
             contacts={contacts}
             filter={filter}
             onBtnClick={deleteContact}
-            deletePhonebook={deletePhonebook}
+            clearPhonebook={clearPhonebook}
           />
         </section>
       </div>

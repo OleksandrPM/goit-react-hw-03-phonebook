@@ -8,10 +8,10 @@ ContactList.propTypes = {
   contacts: PropTypes.array.isRequired,
   filter: PropTypes.string.isRequired,
   onBtnClick: PropTypes.func.isRequired,
-  deletePhonebook: PropTypes.func.isRequired,
+  clearPhonebook: PropTypes.func.isRequired,
 };
 
-function ContactList({ contacts, filter, onBtnClick, deletePhonebook }) {
+function ContactList({ contacts, filter, onBtnClick, clearPhonebook }) {
   const renderingContacts = filterContacts(contacts, filter);
   return (
     <>
@@ -34,7 +34,7 @@ function ContactList({ contacts, filter, onBtnClick, deletePhonebook }) {
             </ul>
             <button
               type="button"
-              onClick={deletePhonebook}
+              onClick={clearPhonebook}
               className={css.delete_all_btn}
             >
               Delete all contacts
