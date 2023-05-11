@@ -8,28 +8,38 @@ ContactList.propTypes = {
   contacts: PropTypes.array.isRequired,
   filter: PropTypes.string.isRequired,
   onBtnClick: PropTypes.func.isRequired,
+  deletePhonebook: PropTypes.func.isRequired,
 };
 
-function ContactList({ contacts, filter, onBtnClick }) {
+function ContactList({ contacts, filter, onBtnClick, deletePhonebook }) {
   const renderingContacts = filterContacts(contacts, filter);
   return (
     <>
       {contacts.length > 0 ? (
         renderingContacts.length > 0 ? (
-          <ul className={css.contact_list}>
-            {renderingContacts.map(contact => {
-              const { id, name, number } = contact;
-              return (
-                <li className={css.contact_item} key={id}>
-                  <Contact
-                    name={name}
-                    number={number}
-                    onClick={()=>onBtnClick(id)}
-                  />
-                </li>
-              );
-            })}
-          </ul>
+          <>
+            <ul className={css.contact_list}>
+              {renderingContacts.map(contact => {
+                const { id, name, number } = contact;
+                return (
+                  <li className={css.contact_item} key={id}>
+                    <Contact
+                      name={name}
+                      number={number}
+                      onClick={() => onBtnClick(id)}
+                    />
+                  </li>
+                );
+              })}
+            </ul>
+            <button
+              type="button"
+              onClick={deletePhonebook}
+              className={css.delete_all_btn}
+            >
+              Delete all contacts
+            </button>
+          </>
         ) : (
           <p>No contacts were found for your request</p>
         )

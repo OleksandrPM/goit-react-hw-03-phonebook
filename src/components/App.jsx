@@ -4,27 +4,43 @@ import { Component } from 'react';
 import ContactForm from './ContactForm';
 import Filter from './Filter';
 import ContactList from './ContactList';
+import {
+  pushToLocalStorage,
+  getFromLocalStorage,
+  clearStorage,
+} from 'localStorage/local-storage';
+
 import css from './App.module.css';
 
 class App extends Component {
   state = {
-    contacts: [
-      { id: 'id-1', name: 'Rosie Simpson', number: '459-12-56' },
-      { id: 'id-2', name: 'Hermione Kline', number: '443-89-12' },
-      { id: 'id-3', name: 'Eden Clements', number: '645-17-79' },
-      { id: 'id-4', name: 'Annie Copeland', number: '227-91-26' },
-    ],
+    contacts: [],
     filter: '',
   };
 
+  componentDidMount() {
+    const phonebook = getFromLocalStorage();
+    if (phonebook !== null) {
+      this.setState({ contacts: phonebook });
+    }
+  }
+
+  componentDidUpdate() {
+    if (this.state.contacts.length > 0) {
+      pushToLocalStorage(this.state.contacts);
+    }
+  }
+
   addContact = inputData => {
     const { name, number } = inputData;
-    if (!this.isContactPresent(name, number)) {
+    const {
+      state: { contacts },
+      isContactPresent,
+      createContactObj,
+    } = this;
+    if (!isContactPresent(name, number)) {
       this.setState({
-        contacts: [
-          ...this.state.contacts,
-          this.createContactObj(inputData),
-        ].sort(),
+        contacts: [...contacts, createContactObj(inputData)].sort(),
       });
     } else {
       alert(`${name} is already in the contacts`);
@@ -36,13 +52,21 @@ class App extends Component {
     return { id, ...inputData };
   }
 
-  isContactPresent(name, number) {
-    return this.state.contacts.find(
-      contact =>
-        contact.name.toLowerCase() === name.toLowerCase() &&
-        contact.number === number
-    );
-  }
+  isContactPresent = (name, number) => {
+    const {
+      state: { contacts },
+    } = this;
+
+    if (contacts.length > 0) {
+      return contacts.find(
+        contact =>
+          contact.name.toLowerCase() === name.toLowerCase() &&
+          contact.number === number
+      );
+    } else {
+      return false;
+    }
+  };
 
   deleteContact = id => {
     this.setState(({ contacts }) => {
@@ -54,21 +78,34 @@ class App extends Component {
     this.setState({ filter: event.target.value.trim().toLowerCase() });
   }, 300);
 
+  deletePhonebook = () => {
+    this.setState({ contacts: [] });
+    clearStorage();
+  };
+
   render() {
+    const {
+      state: { contacts, filter },
+      addContact,
+      deleteContact,
+      onChangeFilterInput,
+      deletePhonebook,
+    } = this;
+
     return (
       <div className={css.app}>
         <h1>Phonebook</h1>
-        <ContactForm onSubmit={this.addContact} />
+        <ContactForm onSubmit={addContact} />
         <section className={css.contacts}>
           <h2>Contacts</h2>
-          <Filter
-            value={this.state.filter}
-            onChange={this.onChangeFilterInput}
-          />
+          {contacts.length > 0 && (
+            <Filter value={filter} onChange={onChangeFilterInput} />
+          )}
           <ContactList
-            contacts={this.state.contacts}
-            filter={this.state.filter}
-            onBtnClick={this.deleteContact}
+            contacts={contacts}
+            filter={filter}
+            onBtnClick={deleteContact}
+            deletePhonebook={deletePhonebook}
           />
         </section>
       </div>
